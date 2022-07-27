@@ -13,7 +13,7 @@
 
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\HouseController;
+use App\Http\Controllers\Admin\HouseController as AdminHouseController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\HomeController;
@@ -48,14 +48,14 @@ Route::get('auth/google/callback', [GoogleController::class,'handleGoogleCallbac
 
 Route::group(['as' => 'admin.', 'prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['auth', 'admin', 'verified']],
     function () {
-        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::resource('area', 'AreaController');
-        Route::resource('house', 'HouseController');
-        Route::get('manage-landlord', [HouseController::class, 'manageLandlord'])->name('manage.landlord');
-        Route::delete('manage-landlord/destroy/{id}', [HouseController::class, 'removeLandlord'])->name('remove.landlord');
+        Route::resource('house', 'Admin/HouseController');
+        Route::get('manage-landlord', [AdminHouseController::class, 'manageLandlord'])->name('manage.landlord');
+        Route::delete('manage-landlord/destroy/{id}', [AdminHouseController::class, 'removeLandlord'])->name('remove.landlord');
 
-        Route::get('manage-renter', [HouseController::class,'manageRenter'])->name('manage.renter');
-        Route::delete('manage-renter/destroy/{id}', [HouseController::class,'removeRenter'])->name('remove.renter');
+        Route::get('manage-renter', [AdminHouseController::class,'manageRenter'])->name('manage.renter');
+        Route::delete('manage-renter/destroy/{id}', [AdminHouseController::class,'removeRenter'])->name('remove.renter');
 
         Route::get('profile-info', [SettingsController::class,'showProfile'])->name('profile.show');
         Route::get('profile-info/edit/{id}', [SettingsController::class,'editProfile'])->name('profile.edit');
@@ -72,8 +72,8 @@ Route::group(['as' => 'landlord.', 'prefix' => 'landlord', 'namespace' => 'Landl
     function () {
         Route::get('dashboard', [LandlordDashboardController::class,'index'])->name('dashboard');
         Route::resource('area', 'AreaController');
-        Route::resource('house', 'HouseController');
-        Route::get('house/switch-status/{id}', [HouseController::class,'switch'])->name('house.status');
+        Route::resource('house', 'AdminHouseController');
+        Route::get('house/switch-status/{id}', [AdminHouseController::class,'switch'])->name('house.status');
 
         Route::get('booking-request-list', [LandlordBookingController::class,'bookingRequestListForLandlord'])->name('bookingRequestList');
         Route::post('booking-request/accept/{id}', [LandlordBookingController::class,'bookingRequestAccept'])->name('request.accept');
@@ -102,11 +102,11 @@ Route::group(['as' => 'renter.', 'prefix' => 'renter', 'namespace' => 'renter', 
         Route::get('profile-info/edit/{id}', [RenterSettingsController::class,'editProfile'])->name('profile.edit');
         Route::post('profile-info/update/', [RenterSettingsController::class,'updateProfile'])->name('profile.update');
 
-        Route::get('booking/history', [DashboardController::class,'bookingHistory'])->name('booking.history');
-        Route::get('pending/booking', [DashboardController::class,'bookingPending'])->name('booking.pending');
-        Route::post('pending/booking/cancel/{id}', [DashboardController::class,'cancelBookingRequest'])->name('cancel.booking.request');
+        Route::get('booking/history', [RenterDashboardController::class,'bookingHistory'])->name('booking.history');
+        Route::get('pending/booking', [RenterDashboardController::class,'bookingPending'])->name('booking.pending');
+        Route::post('pending/booking/cancel/{id}', [RenterDashboardController::class,'cancelBookingRequest'])->name('cancel.booking.request');
 
-        Route::post('review', [DashboardController::class,'review'])->name('review');
-        Route::get('review-edit/{id}', [DashboardController::class,'reviewEdit'])->name('review.edit');
-        Route::post('review-update/{id}', [DashboardController::class,'reviewUpdate'])->name('review.update');
+        Route::post('review', [RenterDashboardController::class,'review'])->name('review');
+        Route::get('review-edit/{id}', [RenterDashboardController::class,'reviewEdit'])->name('review.edit');
+        Route::post('review-update/{id}', [RenterDashboardController::class,'reviewUpdate'])->name('review.update');
     });
