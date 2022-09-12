@@ -11,12 +11,14 @@
 |
  */
 
+use App\Http\Controllers\Admin\AreaController;
 use App\Http\Controllers\Admin\BookingController;
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\HouseController as AdminHouseController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Landlord\AreaController as LandlordAreaController;
 use App\Http\Controllers\Landlord\BookingController as LandlordBookingController;
 use App\Http\Controllers\Landlord\DashboardController as LandlordDashboardController;
 use App\Http\Controllers\Landlord\SettingsController as LandlordSettingsController;
@@ -49,8 +51,9 @@ Route::get('auth/google/callback', [GoogleController::class,'handleGoogleCallbac
 Route::group(['as' => 'admin.', 'prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['auth', 'admin', 'verified']],
     function () {
         Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-        Route::resource('area', 'AreaController');
-        Route::resource('house', 'Admin/HouseController');
+        Route::resource('area', AreaController::class);
+        Route::resource('area', AreaController::class);
+        Route::resource('house', HouseController::class);
         Route::get('manage-landlord', [AdminHouseController::class, 'manageLandlord'])->name('manage.landlord');
         Route::delete('manage-landlord/destroy/{id}', [AdminHouseController::class, 'removeLandlord'])->name('remove.landlord');
 
@@ -71,8 +74,8 @@ Route::group(['as' => 'admin.', 'prefix' => 'admin', 'namespace' => 'Admin', 'mi
 Route::group(['as' => 'landlord.', 'prefix' => 'landlord', 'namespace' => 'Landlord', 'middleware' => ['auth', 'landlord', 'verified']],
     function () {
         Route::get('dashboard', [LandlordDashboardController::class,'index'])->name('dashboard');
-        Route::resource('area', 'AreaController');
-        Route::resource('house', 'AdminHouseController');
+        Route::resource('area', LandlordAreaController::class);
+        Route::resource('house', AdminHouseController::class);
         Route::get('house/switch-status/{id}', [AdminHouseController::class,'switch'])->name('house.status');
 
         Route::get('booking-request-list', [LandlordBookingController::class,'bookingRequestListForLandlord'])->name('bookingRequestList');
